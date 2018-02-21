@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+	"http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+	<!-- 配置struts2 可以受理请求的扩展名:以.action，.do,结尾或者什么都不写均可 -->
+	<constant name="struts.action.extension" value="action,do,"></constant>
+	<!-- 通配符的配置方法一：需要设置这个常量为true，然后再在action中单独设置 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="true"/>
+	<!-- 静态方法调用,不建议使用，用于直接url调用action方法 -->
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true"></constant>
+	
+	<package name="crudTest" extends="struts-default" >
+		 
+		 <!-- 配置使用paramsPrepareParamsStack 作为默认的拦截器栈 -->
+		 <!-- 并且修改PrepareInterceptor 拦截器的 alwaysInvokePrepare 属性值为false（默认为true） -->
+		 <interceptors>
+		 	<interceptor-stack name="zc.cris.Stack">
+		 		<interceptor-ref name="paramsPrepareParamsStack">
+		 			<param name="prepare.alwaysInvokePrepare">false</param>
+		 		</interceptor-ref>
+		 	</interceptor-stack>
+		 </interceptors>
+		 <default-interceptor-ref name="zc.cris.Stack"></default-interceptor-ref>
+		
+		 
+		<action name="emp-*" class="cn.zc.cris.crud.EmployeeAction" method="{1}">
+			<result name="{1}">/emp-{1}.jsp</result>
+			<!-- 如果不采用下面的重定向方式，还可以像这样统一配置 -->
+			<result name="success" type="redirectAction">emp-queryList</result>
+			<allowed-methods>queryList,delete,edit,update</allowed-methods>
+		</action>
+		<!-- 流程1：用户删除模块除了删除成功返回到一个delete.jsp页面，然后点击超链接再跳回到查询所有的action
+			   流程2：用户删除成功直接跳转到查询所有数据的action，通过两种重定向方式到action来完成 -->
+		<action name="emp-delete" class="cn.zc.cris.crud.EmployeeAction" method="delete">
+			<!-- <result type="redirect">emp-queryList</result> -->
+			<result type="redirectAction">emp-queryList</result>
+		</action>
+		
+		
+	</package>
+</struts>
+
